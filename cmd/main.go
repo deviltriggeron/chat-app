@@ -1,18 +1,19 @@
 package main
 
 import (
-	"chat-app/internal/api/handler"
-	"chat-app/internal/api/router"
-	"chat-app/internal/api/ws"
-	"chat-app/internal/repository"
-	"chat-app/internal/services"
-	"chat-app/internal/usecase"
 	"context"
 	"log"
 	"net/http"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"chat-app/internal/api/handler"
+	"chat-app/internal/api/router"
+	"chat-app/internal/api/ws"
+	"chat-app/internal/repository"
+	"chat-app/internal/services"
+	"chat-app/internal/usecase"
 )
 
 func main() {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os/signal"
@@ -11,6 +12,8 @@ import (
 	"chat-app/internal/api/handler"
 	"chat-app/internal/api/router"
 	"chat-app/internal/api/ws"
+	"chat-app/internal/config"
+	"chat-app/internal/infrastructure"
 	"chat-app/internal/repository"
 	"chat-app/internal/services"
 	"chat-app/internal/usecase"
@@ -28,6 +31,7 @@ func main() {
 	wg.Add(2)
 	go func() { // fix
 		defer wg.Done()
+		fmt.Printf("Listen and serve: %s\n", "") // get port from config.env
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("error server")
 		}
@@ -43,9 +47,13 @@ func main() {
 }
 
 func buildServer() http.Server {
-	msgRepo := repository.NewMsgRepo() // add postgresql
-	roomRepo := repository.NewRoomRepo()
-	userRepo := repository.NewUserRepo()
+	DBConfig := config.GetDBConfig()
+
+	db := infrastructure.InitDB(DBConfig)
+
+	msgRepo := repository.NewMsgRepo(db)
+	roomRepo := repository.NewRoomRepo(db)
+	userRepo := repository.NewUserRepo(db)
 
 	msgSrv := services.NewMsgSvc(msgRepo)
 	roomSrv := services.NewRoomSvc(roomRepo)
